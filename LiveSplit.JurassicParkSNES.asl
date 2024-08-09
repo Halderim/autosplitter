@@ -288,7 +288,7 @@ split
     var sub3      = settings["sub3Level"] && (vars.watchers["subLevel3"].Old == 0 && vars.watchers["subLevel3"].Current > 0);
     var sub4      = settings["sub4Level"] && (vars.watchers["subLevel4"].Old == 0 && vars.watchers["subLevel4"].Current > 0);    
 
-    var floors      = entryLevel || sub1Level || sub2Level || sub3Level || sub4Level;
+    var floors      = entry || sub1 || sub2 || sub3 || sub4;
 
     // Run-ending splits
     var finish = settings["rtaFinish"] && (vars.watchers["gameDone"].Old == 0 && vars.watchers["gameDone"].Current > 0);
