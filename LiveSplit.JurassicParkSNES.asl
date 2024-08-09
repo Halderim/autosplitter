@@ -53,6 +53,19 @@ startup
     settings.Add("nedryID", false, "Dennis Nedry", "idCards");
     settings.SetToolTip("nedryID", "Split on picking up Dennis Nedry's ID");
 
+    settings.Add("shipFloors", false, "Ship Floor");
+    settings.SetToolTip("shipFloors", "Split on clearing floors on the ship");
+    settings.Add("entryLevel", false, "Entry Level Cleared", "shipFloors");
+    settings.SetToolTip("entryLevel", "Split on clearing Entry Level of Ship");
+    settings.Add("sub1Level", false, "Sub Level 1 Cleared", "shipFloors");
+    settings.SetToolTip("sub1Level", "Split on clearing Sub Level 1 of Ship");
+    settings.Add("sub2Level", false, "Sub Level 2 Cleared", "shipFloors");
+    settings.SetToolTip("sub2Level", "Split on clearing Sub Level 2 of Ship");
+    settings.Add("sub3Level", false, "Sub Level 3 Cleared", "shipFloors");
+    settings.SetToolTip("sub3Level", "Split on clearing Sub Level 3 of Ship");
+    settings.Add("sub4Level", false, "Sub Level 4 Cleared", "shipFloors");
+    settings.SetToolTip("sub4Level", "Split on clearing Sub Level 4 of Ship");
+
     settings.Add("rtaFinish", false, "Chopper Finish");
     settings.SetToolTip("rtaFinish", "Split on entering the helipad");
     
@@ -208,6 +221,12 @@ init
         new MemoryWatcher<byte>(memoryOffset + 0x001DF5) { Name = "shipComSent" },
         new MemoryWatcher<byte>(memoryOffset + 0x000275) { Name = "mainlandComSent" },
 
+        new MemoryWatcher<byte>(memoryOffset + 0x001E1B) { Name = "entryLevel" },
+        new MemoryWatcher<byte>(memoryOffset + 0x001E28) { Name = "subLevel1" },
+        new MemoryWatcher<byte>(memoryOffset + 0x001E29) { Name = "subLevel2" },
+        new MemoryWatcher<byte>(memoryOffset + 0x001E2A) { Name = "subLevel3" },
+        new MemoryWatcher<byte>(memoryOffset + 0x001E2B) { Name = "subLevel4" },
+        
         new MemoryWatcher<byte>(memoryOffset + 0x000E0F) { Name = "eggCount" },
         new MemoryWatcher<byte>(memoryOffset + 0x000289) { Name = "allEggs" },
         new MemoryWatcher<byte>(memoryOffset + 0x00038B) { Name = "gameDone" },
@@ -262,6 +281,15 @@ split
 
     var objectives      = generatorOn || rebootCom || vcSealed || gasPickup || gasPlanted || sec1granted || sec2granted || shipComSent || mainlandComSent ;
 
+    // Split on floors
+    var entry     = settings["entryLevel"] && (vars.watchers["entryLevel"].Old == 0 && vars.watchers["entryLevel"].Current > 0);
+    var sub1      = settings["sub1Level"] && (vars.watchers["subLevel1"].Old == 0 && vars.watchers["subLevel1"].Current > 0);
+    var sub2      = settings["sub2Level"] && (vars.watchers["subLevel2"].Old == 0 && vars.watchers["subLevel2"].Current > 0);
+    var sub3      = settings["sub3Level"] && (vars.watchers["subLevel3"].Old == 0 && vars.watchers["subLevel3"].Current > 0);
+    var sub4      = settings["sub4Level"] && (vars.watchers["subLevel4"].Old == 0 && vars.watchers["subLevel4"].Current > 0);    
+
+    var floors      = entryLevel || sub1Level || sub2Level || sub3Level || sub4Level;
+
     // Run-ending splits
     var finish = settings["rtaFinish"] && (vars.watchers["gameDone"].Old == 0 && vars.watchers["gameDone"].Current > 0);
 
@@ -294,7 +322,6 @@ split
         vars.DebugOutput("Split due to nedry card pickup");
     }
 
-
     if(generatorOn){
         vars.DebugOutput("Split due to generatorOn done");
     }
@@ -323,5 +350,5 @@ split
         vars.DebugOutput("Split due to gasPlanted done");
     }
     
-    return cards || objectives || finish;
+    return cards || objectives || floors || finish;
 }
