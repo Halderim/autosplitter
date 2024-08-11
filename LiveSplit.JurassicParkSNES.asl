@@ -68,6 +68,9 @@ startup
 
     settings.Add("rtaFinish", false, "Chopper Finish");
     settings.SetToolTip("rtaFinish", "Split on entering the helipad");
+
+    settings.Add("fractalsFinish", false, "Fractals Finish");
+    settings.SetToolTip("fractalsFinish", "Split on clicking on a fractals");
     
     vars.frameRate = 60.0;
 
@@ -232,6 +235,7 @@ init
         new MemoryWatcher<byte>(memoryOffset + 0x000E0F) { Name = "eggCount" },
         new MemoryWatcher<byte>(memoryOffset + 0x000289) { Name = "allEggs" },
         new MemoryWatcher<byte>(memoryOffset + 0x00038B) { Name = "gameDone" },
+        new MemoryWatcher<byte>(memoryOffset + 0x0018AB) { Name = "fractalsDone" },
     };
 }
 
@@ -295,6 +299,9 @@ split
     // Run-ending splits
     var finish = settings["rtaFinish"] && (vars.watchers["gameDone"].Old == 0 && vars.watchers["gameDone"].Current > 0);
 
+    // Fractals Run-ending splits
+    var fFinish = settings["fractalsFinish"] && (vars.watchers["fractalsDone"].Old == 8 && (vars.watchers["fractalsDone"].Current == 140 || vars.watchers["fractalsDone"].Current == 129 || vars.watchers["fractalsDone"].Current == 132 || vars.watchers["fractalsDone"].Current == 133 || vars.watchers["fractalsDone"].Current == 139 || vars.watchers["fractalsDone"].Current == 138 || vars.watchers["fractalsDone"].Current == 128 || vars.watchers["fractalsDone"].Current == 136 ) );
+
 
     if(malcom){
         vars.DebugOutput("Split due to malcom card pickup");
@@ -352,5 +359,5 @@ split
         vars.DebugOutput("Split due to gasPlanted done");
     }
     
-    return cards || objectives || floors || finish;
+    return cards || objectives || floors || finish || fFinish;
 }
